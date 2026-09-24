@@ -33,6 +33,7 @@ with tempfile.TemporaryDirectory() as folder:
     assert subprocess.check_output([exe, str(path), sql], text=True) == "customer,total_cents\n"
     path.write_text("customer,amount_cents\nalice,not-an-integer\n")
     assert subprocess.run([exe, str(path), sql], capture_output=True).returncode != 0
-    path.write_text("customer,amount_cents\nalice,9223372036854775807\nalice,1\n")
-    assert subprocess.run([exe, str(path), sql], capture_output=True).returncode != 0
+    path.write_text("customer,amount_cents\nalice,9223372036854775807\nalice,100\n")
+    for threads in (1, 2):
+        assert subprocess.run([exe, str(path), sql, "--threads", str(threads)], capture_output=True).returncode != 0
 print("PASS: SQLite oracle, 4 worker counts, empty input, invalid input and overflow")
